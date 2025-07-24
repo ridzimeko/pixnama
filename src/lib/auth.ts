@@ -1,9 +1,9 @@
 import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-// If your Prisma file is located elsewhere, you can change the path
-import { PrismaClient } from "@/generated/prisma";
- 
-const prisma = new PrismaClient();
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "@/db/"; 
+import * as authSchema from "@/db/auth-schema";
+import * as schema from "@/db/schema"
+
 export const auth = betterAuth({
     emailAndPassword: {
         enabled: true, 
@@ -15,7 +15,11 @@ export const auth = betterAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         }
     },
-    database: prismaAdapter(prisma, {
-        provider: "postgresql", // or "mysql", "postgresql", ...etc
+    database: drizzleAdapter(db, {
+        provider: "pg", // or "mysql", "sqlite"
+        schema: {
+            ...schema,
+            ...authSchema
+        }
     }),
 });
