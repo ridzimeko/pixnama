@@ -14,6 +14,8 @@ import Link from "next/link";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GoogleIcon } from "../Icons";
+import { authClient } from "@/lib/auth-client";
+import { signInWithGoogle } from "@/lib/helpers/auth-actions";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Email tidak valid" }),
@@ -31,6 +33,17 @@ export function LoginCard() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // TODO kirim ke endpoint backend login misal: /api/login
+    const { data, error } = await authClient.signIn.email({
+      email: values.email,
+      password: values.password,
+      callbackURL: '/create'
+    })
+
+    if (error) {
+      console.log(error)
+    }
+
+    console.log(data)
   };
 
   return (
@@ -71,7 +84,7 @@ export function LoginCard() {
             <Button type="submit" className="mt-6 w-full">
               Login
             </Button>
-            <Button variant="outline" type="button" className="w-full cursor-pointer" onClick={() => {}}>
+            <Button variant="outline" type="button" className="w-full cursor-pointer" onClick={signInWithGoogle}>
                 <GoogleIcon />
               Login dengan Google
             </Button>

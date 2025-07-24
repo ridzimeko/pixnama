@@ -14,6 +14,8 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { GoogleIcon } from "../Icons";
+import { signInWithGoogle } from "@/lib/helpers/auth-actions";
+import { authClient } from "@/lib/auth-client";
 
 const formSchema = z.object({
   name: z.string().min(2, "Nama terlalu pendek"),
@@ -33,14 +35,25 @@ export function RegisterCard() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log("Registering user:", values);
-    // kirim ke endpoint backend register misal: /api/register
+    
+    const {data, error} = await authClient.signUp.email({
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    })
+
+    if (error) {
+      console.log(error)
+    }
+
+    console.log(data)
   };
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl">Register</CardTitle>
-        <Button variant="outline" type="button" className="mt-4 w-full cursor-pointer" onClick={() => {}}>
+        <Button variant="outline" type="button" className="mt-4 w-full cursor-pointer" onClick={signInWithGoogle}>
                 <GoogleIcon />
               Daftar dengan Google
             </Button>
